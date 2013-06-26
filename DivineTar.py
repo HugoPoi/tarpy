@@ -24,6 +24,7 @@ class Tar:
         self.open_tar()
         self.directories = []
         self.loadAllHeader()
+        self.findRoot()
 
 #change current directory
     def chdir_tar(self, newCWD):
@@ -121,6 +122,18 @@ class Tar:
     def opendir_tar(self):
         pass
 
+    def findRoot(self):
+      self.roots = []
+      #TODO parcourir les TarDir à la place des headers ... oupas
+      for header in self.headers:
+        if header["fileType"] == "5":
+          path = header["path"].rsplit("/",1)
+          print path
+          if not any(path[0].startswith(root) for root in self.roots):
+            path[0]+="/"
+            self.roots.append(path[0])
+      print self.roots
+
 
 #"""""""""""""""""""""""""""""#
 #   TarDir class Management   #
@@ -163,8 +176,6 @@ class TarDir:
 #close an repertory
     def close(self):
         pass
-    def findRoot(self):
-      
 
 #"""""""""""""""""""""""""""""#
 #   TarFile class Management #
