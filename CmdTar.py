@@ -1,12 +1,14 @@
 #!/usr/bin/python2.7
 
-import argparse,sys
+import argparse,sys,DivineTar
 
 class CmdTar:
 
   currentPath = ""
   
   def __init__(self):
+    
+    self.currentTar = DivineTar.Tar(sys.argv[1])
     
     line = sys.stdin.readline()
     
@@ -34,5 +36,7 @@ class CmdTar:
 
 
 
-    
+#try:
 main = CmdTar()
+#except:
+#  exit(0)

@@ -15,6 +15,7 @@ class Tar:
     fileStream = 0
     fileSize = 0
     dirNumbers = 0
+    headers = []
 
     def __init__(self, tarFileName):
 
@@ -22,6 +23,7 @@ class Tar:
         self.rootDir = "."
         self.open_tar()
         self.directories = []
+        self.loadAllHeader()
 
 #change current directory
     def chdir_tar(self, newCWD):
@@ -41,11 +43,10 @@ class Tar:
             Tar.fileStream = open(self.fileName, 'r+b')
             Tar.fileSize = len(Tar.fileStream.read())
             Tar.fileStream.seek(0)
-            #self.chdir_tar("/")
 
 # load repertories and files
-    def load_OneInstance(self):
-        tarInstance = {
+    def loadHeader(self):
+        tarHeader = {
             "path":         "",
             "permission":   "",
             "proprietaire": "",
@@ -57,7 +58,7 @@ class Tar:
             "lnFile":       "",
             "blockStart":   ""
         }
-
+        
         #read octet by octet
         tarStruct = [
                 [100, "path"],
@@ -74,40 +75,36 @@ class Tar:
         dataSize = 0
         for j in tarStruct:
             tmp = str(j[1])
-            tarInstance[tmp] = tarInstance[tmp]
-            tarInstance["blockStart"] = Tar.fileStream.tell()
-            if tarInstance["blockStart"] == Tar.fileSize:
-                return
+            tarHeader[tmp] = tarHeader[tmp]
+            tarHeader["blockStart"] = Tar.fileStream.tell()
+            if tarHeader["blockStart"] == Tar.fileSize:
+                return False
 
-            tarInstance[tmp] = Tar.fileStream.read(j[0])
+            tarHeader[tmp] = Tar.fileStream.read(j[0])
             # FUCK FUCK i do waste one day to find this shit
-            tarInstance[tmp] = tarInstance[tmp].replace("\x00", '')
-            tarInstance[tmp] = tarInstance[tmp].replace("0", '')
+            tarHeader[tmp] = tarHeader[tmp].replace("\x00", '')
+            tarHeader[tmp] = tarHeader[tmp].replace("0", '')
 
             #check the size of the file
-            if j[1] == "size" and tarInstance[tmp] != '':
+            if j[1] == "size" and tarHeader[tmp] != '':
                 dataSize = 512
             #jump utar infos at the end
 
         Tar.fileStream.read(dataSize)
         #reset dataSize
-        return tarInstance
+        return tarHeader
 
-    def load_all_instance(self):
-        instance = {"d": "e"}
-        f = None
-        while instance:
-            instance.sort(f=None, key=None, reverse=None)
-            for (i, v) in f.items():
-                if i == "path" and v == '':
-                    return
-                else:
-                    print "print", i, "=", v
-
-            print "\n"
-            instance = self.load_OneInstance()
-
+    def loadAllHeader(self):
+        currentHeader = self.loadHeader()
+        while currentHeader["path"] != "":
+            self.displayHeader(currentHeader)
+            self.headers.append(currentHeader)
+            currentHeader = self.loadHeader()
         return
+
+    def displayHeader(self,header):
+      for data in header.items():
+        print data[0],"=",data[1]
 
 # close the file
     def close_tar(self):
@@ -147,6 +144,7 @@ class TarDir:
         self.curPos = 0
         self.blockStart = indexIn
         self.filesIn = []
+        self.dirsIn = []
 
 # add files with TarFile instances
     def addFile(self, tarFileIn):
@@ -165,7 +163,8 @@ class TarDir:
 #close an repertory
     def close(self):
         pass
-
+    def findRoot(self):
+      
 
 #"""""""""""""""""""""""""""""#
 #   TarFile class Management #
