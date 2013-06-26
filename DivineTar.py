@@ -16,6 +16,7 @@ class Tar:
     fileSize = 0
     dirNumbers = 0
     headers = []
+    roots = []
 
     def __init__(self, tarFileName):
 
@@ -123,17 +124,22 @@ class Tar:
         pass
 
     def findRoot(self):
-      self.roots = []
-      #TODO parcourir les TarDir à la place des headers ... oupas
+      #TODO parcourir les TarDir a la place des headers ... oupas
       for header in self.headers:
-        if header["fileType"] == "5":
+        #if header["fileType"] == "5":
           path = header["path"].rsplit("/",1)
           print path
           if not any(path[0].startswith(root) for root in self.roots):
-            path[0]+="/"
+            #path[0]+="/"
             self.roots.append(path[0])
       print self.roots
-
+      
+    def search(self,path):
+      out = []
+      for header in self.headers:
+        if not "/" in header["path"].rsplit(path,1)[0]:
+          out.append(header)
+      return out
 
 #"""""""""""""""""""""""""""""#
 #   TarDir class Management   #

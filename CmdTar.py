@@ -26,7 +26,10 @@ class CmdTar:
     lsParser = argparse.ArgumentParser()
     lsParser.add_argument("path", nargs='?',metavar="PATH", type=str)
     lsArgs = lsParser.parse_args(args)
-    print lsArgs.path
+    if lsArgs.path != None:
+      list = self.currentTar.search(lsArgs.path)
+      for ele in list:
+        print "    ",ele["path"]
     
   def exit(self, args):
     exit(0)
