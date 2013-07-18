@@ -30,12 +30,16 @@ class CmdTar:
       list = self.currentTar.search(lsArgs.path)
       for ele in list:
         print "    ",ele["path"]
-    
+  
+  def cd(self, args):
+    cdParser = argparse.ArgumentParser()
+    cdParser.add_argument("path", nargs='?',metavar="PATH", type=str)
+    cdArgs = cdParser.parse_args(args)
+
   def exit(self, args):
     exit(0)
   def quit(self, args):
     exit(0)
-
 
 
 

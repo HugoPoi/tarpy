@@ -137,7 +137,7 @@ class Tar:
     def search(self,path):
       out = []
       for header in self.headers:
-        if not "/" in header["path"].rsplit(path,1)[0]:
+        if header["path"].startswith(path) and not "/" in header["path"][:-1].rsplit(path,1)[1]:
           out.append(header)
       return out
 
